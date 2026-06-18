@@ -462,6 +462,12 @@ $3:: Send "{F5}"
 $4:: Reload() ; Hotkey to reload the script
 $5:: Suspend() ; Hotkey to suspend the script
 
+$q:: return
+$w:: return
+$e:: return
+$r:: return
+$t:: return
+
 ;$a:: MouseClick "left"
 $s:: Send 7
 $d::
@@ -483,9 +489,26 @@ $d Up::
 }
 
 $f:: Send "{WheelDown 3}" ;scrollspeed:=5
+$g:: return
 
-$c:: Send "{Space Down}"
-$c Up:: Send "{Space Up}"
+$z:: return
+$x:: return
+$c:: return
+$v:: return
+$b:: return
+
+$`:: Send "1"
+$Tab:: Send "2"
+
+SetCapsLockState "Off"
+
+$CapsLock:: Send "3"
+
+$Shift::
+$Ctrl::
+$LWin:: Send "6"
+$Alt:: Send "{Space Down}"
+$Alt Up:: Send "{Space Up}"
 
 $Space::
 {
@@ -511,7 +534,7 @@ $Space::
     }
 }
 
-LShift & Space::return
+LShift & Space::return ; do nothing
 #HotIf
 /*
    ----------------------------------------------
@@ -1696,45 +1719,42 @@ $space Up:: Send "{Space Up}"
 /*
    ----------------------------------------------
    ----------------------------------------------
-   -----------------Hotstring--------------------
+   --------------------mod-----------------------
    ----------------------------------------------
    ----------------------------------------------
 */
 
+; --- Existing ---
+PgUp Up:: Send "#{PrintScreen}"
+; vk9E Up:: Send "#{PrintScreen}"
 
-/*
-; Define your hotstring replacements
-hotstrings := Map(
-    "omg", "oh my god",
-    "fyi", "for your information",
-    "afaik", "as far as I know",
-    "btw", "by the way",
-    "ahk", "autohotkey",
-    "s@", "shanto.ewu99@gmail.com"
-)
+; ------------------------
+; Emergency Screen Blank
+; End key OR double-right-click
+; ------------------------
+; DPI button (VK9E) toggles black screen
 
-typedText := ""
+global MyGui := 0
+global ScreenOn := true
 
-; Start capturing input
-ih := InputHook("V")
-ih.Start()
+MButton Up::ToggleBlackScreen()
+End::ToggleBlackScreen()
 
-ih.OnChar := (ih, char) => typedText .= char
+ToggleBlackScreen() {
+    global MyGui, ScreenOn
 
-handleEnter() {
-    global typedText, hotstrings
-    if hotstrings.Has(typedText) {
-        Send("{BS " typedText.Length "}")
-        SendText(hotstrings[typedText])
+    if ScreenOn {
+        MyGui := Gui("+AlwaysOnTop -Caption +ToolWindow")
+        MyGui.BackColor := "Black"
+        MyGui.Show("x0 y0 w" A_ScreenWidth " h" A_ScreenHeight)
+        ScreenOn := false
     } else {
-        Send("{Enter}")
+        if IsObject(MyGui)
+            MyGui.Destroy()
+
+        ScreenOn := true
     }
-    typedText := ""
-    ih.Start()
 }
-
-*/
-
 
 /*
   ----------------------------------------------
